@@ -188,21 +188,34 @@ abstract class A2_Core extends Acl {
 		}
 		else
 		{
-			$error = $resource !== NULL
-				? $resource instanceof Acl_Resource_Interface ? $resource->get_resource_id() : (string) $resource
-				: 'resource';
+			$resources = $privileges = $errors = array();
 
-			$error .= '.' . ($privilege !== NULL
-				? $privilege
-				: 'default');
-
-			if( ! $message = Kohana::message('a2', $error))
+			if ( $resource !== NULL)
 			{
-				// specific message not found - use default
-				$message = Kohana::message('a2', 'default');
+				$resources[] = $resource instanceof Acl_Resource_Interface ? $resource->get_resource_id() : (string) $resource;
 			}
 
-			throw new A2_Exception($message);
+			if ( $privilege !== NULL)
+			{
+				$privileges[] = $privilege;
+			}
+
+			$resources[]  = 'default';
+			$privileges[] = 'default';
+
+			foreach ( $resources as $r)
+			{
+				foreach ( $privileges as $p)
+				{
+					if ( $message = Kohana::message('a2', $r . '.' . $p))
+					{
+						throw new A2_Exception($message);
+					}
+				}
+			}
+
+			// this only happens when someone has removed the 'default.default' error message from messages/a2.php
+			throw new A2_Exception('No error messages defined');
 		}
 	}
 
