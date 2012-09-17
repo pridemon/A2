@@ -71,7 +71,7 @@ abstract class A2_Core extends Acl {
 
 		// Create instance of Authenticate lib (a1, auth, authlite)
 		$instance = new ReflectionMethod($this->_config->lib['class'], 'instance');
-		$params   = Arr::get($this->_config, 'params', array());
+		$params   = Arr::get($this->_config->lib, 'params', array());
 
 		$this->_auth = $instance->invokeArgs(NULL, $params);
 
